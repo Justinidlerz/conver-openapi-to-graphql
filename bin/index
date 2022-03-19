@@ -1,14 +1,37 @@
 #!/usr/bin/env node
+const path = require('path');
 const { printSchema } = require('graphql');
 const { loadSchema } = require('../lib/transform');
+const efs = require('fs-extra');
+const fs = require('fs');
 
-const path = process.argv[2];
+const jsonPath = process.argv[2];
+const outputPath = process.argv[3];
 
-if (!path) {
-    throw new Error('Missing argument path');
+if (!jsonPath) {
+  throw new Error('Missing argument path');
 }
+const realPath = path.isAbsolute(jsonPath) ? jsonPath : path.join(process.cwd(), jsonPath);
 
-loadSchema(path).then((doc) => {
-    const str = printSchema(doc);
+loadSchema(realPath).then((doc) => {
+  const str = printSchema(doc)
+    .replace(/\\_/g, '')
+    .replace(/\\/g, '')
+    .replace(/`/g, '')
+    .replace('\b', '');
+
+  if (outputPath) {
+    const realOutputPath = path.isAbsolute(outputPath)
+      ? outputPath
+      : path.join(process.cwd(), outputPath);
+    const parsedPath = path.parse(realOutputPath);
+
+    efs.ensureDirSync(parsedPath.dir);
+
+    fs.writeFileSync(realOutputPath, str, {encoding: 'utf8'});
+
+    console.log(`The graphQL content written to: ${realOutputPath}`);
+  } else {
     console.log(str);
-})
+  }
+});
