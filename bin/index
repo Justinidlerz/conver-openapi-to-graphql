@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+const { printSchema } = require('graphql');
+const { loadSchema } = require('../lib/transform');
+
+const path = process.argv[2];
+
+if (!path) {
+    throw new Error('Missing argument path');
+}
+
+loadSchema(path).then((doc) => {
+    const str = printSchema(doc);
+    console.log(str);
+})
