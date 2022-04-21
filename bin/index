@@ -18,7 +18,7 @@ loadSchema(realPath).then((doc) => {
     .replace(/\\_/g, '')
     .replace(/\\/g, '')
     .replace(/`/g, '')
-    .replace('\b', '');
+    .replace(/\b/g, '');
 
   if (outputPath) {
     const realOutputPath = path.isAbsolute(outputPath)
