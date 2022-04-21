@@ -1,4 +1,4 @@
-# Cover openapi to graphql
+# Conver openapi to graphql
 
 # Usage
 
